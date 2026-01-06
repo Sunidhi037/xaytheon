@@ -19,6 +19,67 @@ const shapes = {
 
 // Initialize the 3D scene
 function init() {
+ fix-loader-accessibility
+    // Get canvas element
+    const canvas = document.getElementById('three-canvas');
+    const container = document.querySelector('.canvas-container');
+    
+    // Create scene
+    scene = new THREE.Scene();
+    // Keep scene background transparent so the site stays white
+    // renderer will composite over the white page background
+    
+    // Create camera
+    const aspectRatio = container.clientWidth / container.clientHeight;
+    camera = new THREE.PerspectiveCamera(75, aspectRatio, 0.1, 1000);
+    camera.position.set(5, 5, 5);
+    
+    // Create renderer
+    renderer = new THREE.WebGLRenderer({ 
+        canvas: canvas, 
+        antialias: true,
+        alpha: true // allow DOM/page background to show through
+    });
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    
+    // Add lighting
+    setupLighting();
+    
+    // Load model: allow page to specify a different model via data-model
+    const modelPath = canvas && canvas.dataset.model ? canvas.dataset.model : 'assets/models/prism.glb';
+    loadGltfFromUrl(modelPath, undefined, () => {
+        console.warn('Falling back to primitive shape because prism.glb failed to load.');
+        safeCreatePrimitiveFallback();
+    });
+    
+    // Setup controls
+    setupControls();
+    
+    // Setup event listeners
+    setupEventListeners();
+    
+    // Hide loading screen
+    // and announce completion
+setTimeout(() => {
+    const loader = document.getElementById('loading-screen');
+    loader.classList.add('hidden');
+
+    // Screen reader announcement
+    const doneMsg = document.createElement('div');
+    doneMsg.setAttribute('role', 'status');
+    doneMsg.setAttribute('aria-live', 'polite');
+    doneMsg.classList.add('sr-only'); // visually hidden
+    doneMsg.textContent = 'XAYTHEON has finished loading.';
+    document.body.appendChild(doneMsg);
+}, 1000);
+
+    
+    // Start animation loop
+    animate();
+
   // Get canvas element
   const canvas = document.getElementById("three-canvas");
   const container = document.querySelector(".canvas-container");
@@ -72,6 +133,7 @@ function init() {
 
   // Start animation loop
   animate();
+ main
 }
 
 // Setup lighting
