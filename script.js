@@ -33,6 +33,7 @@ function init() {
     return;
   }
 
+<<<<<<< HEAD
   // Get canvas element
   const canvas = document.getElementById('three-canvas');
   const container = document.querySelector('.canvas-container');
@@ -43,11 +44,22 @@ function init() {
   }
 
   // Ensure THREE is present
+=======
+
+    // Get canvas element
+    const canvas = document.getElementById('three-canvas');
+    const container = document.querySelector('.canvas-container');
+
+    // Ensure THREE is present
+>>>>>>> 4f889c657f762f4b702319e1b65e6379119b14d4
   if (typeof THREE === "undefined") {
     console.error("Three.js is not loaded; cannot initialize 3D scene.");
     return;
   }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4f889c657f762f4b702319e1b65e6379119b14d4
   _isInitialized = true;    
   // Create scene
   scene = new THREE.Scene();
@@ -71,6 +83,7 @@ function init() {
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.setClearColor(0x000000, 0); // keep transparent
 
+<<<<<<< HEAD
   // Add lighting
   setupLighting();
   // Setup controls
@@ -89,6 +102,26 @@ function init() {
   // Hide loading screen
   // and announce completion
   setTimeout(() => {
+=======
+    // Add lighting
+    setupLighting();
+    // Setup controls
+    setupControls();
+    
+    // Load model: allow page to specify a different model via data-model
+    const modelPath = canvas && canvas.dataset.model ? canvas.dataset.model : 'assets/models/prism.glb';
+    loadGltfFromUrl(modelPath, undefined, () => {
+      console.warn('Falling back to primitive shape because prism.glb failed to load.');
+      safeCreatePrimitiveFallback();
+    });
+    
+    // Setup event listeners
+    setupEventListeners();    
+    addInteractiveEffects();
+    // Hide loading screen
+    // and announce completion
+   setTimeout(() => {
+>>>>>>> 4f889c657f762f4b702319e1b65e6379119b14d4
       const loader = document.getElementById("loading-screen");
       if (loader) loader.classList.add("hidden");
 
@@ -143,6 +176,7 @@ function disposeScene() {
     currentModel = null;
   }
 
+<<<<<<< HEAD
 if (scene) {
   const lightsToRemove = [];
   scene.traverse(obj => {
@@ -153,6 +187,8 @@ if (scene) {
   lightsToRemove.forEach(light => scene.remove(light));
 }
 
+=======
+>>>>>>> 4f889c657f762f4b702319e1b65e6379119b14d4
   // Dispose renderer
   try {
     if (renderer) {
@@ -167,6 +203,7 @@ if (scene) {
     console.warn("Renderer disposal failed:", e);
   }
 
+<<<<<<< HEAD
   if (window.__interactiveCleanup) {
   window.__interactiveCleanup();
   window.__interactiveCleanup = null;
@@ -176,6 +213,14 @@ if (controls && typeof controls.dispose === "function") {
   controls.dispose();
 }
   controls = null;
+=======
+  // Clear controls
+  if (controls) {
+    // Orbitcontrols may not expose disposes, but remove references
+    controls = null;
+  }
+
+>>>>>>> 4f889c657f762f4b702319e1b65e6379119b14d4
   scene = null;
   camera = null;
   _isInitialized = false;
@@ -222,6 +267,10 @@ function setupControls() {
   controls.enableRotate = true;
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4f889c657f762f4b702319e1b65e6379119b14d4
 // -----------------------------
 // Shape creation and model handling
 // -----------------------------
