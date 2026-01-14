@@ -87,6 +87,18 @@ body {
   --link-color: #93c5fd;
   --link-hover: #bfdbfe;
 }
+/* Dark mode: make eye icon visible */
+[data-theme="dark"] .toggle-password img {
+  filter: invert(1);
+}
+/* Fix low-contrast status text in dark mode */
+[data-theme="dark"] .github-status {
+  color: #e5e7eb !important;
+}
+
+
+
+
 
 /* Reset and Base Styles */
 @font-face {
@@ -431,21 +443,6 @@ body.eightgon-page {
 
 .theme-toggle:hover svg {
   transform: rotate(15deg);
-}
-
-/* Hamburger Menu */
-.hamburger {
-  display: none;
-  flex-direction: column;
-  cursor: pointer;
-}
-
-.bar {
-  width: 25px;
-  height: 3px;
-  background: var(--text-primary);
-  margin: 3px 0;
-  transition: 0.3s;
 }
 
 /* Hero Section */
@@ -952,6 +949,11 @@ a:hover {
     width: 100%;
   }
 
+  .github-form .btn {
+    max-width: none;
+    align-self: stretch;
+  }
+
   /* Fix for the Map getting cut off or being too tall */
   #graph-wrap {
     height: 400px !important;
@@ -1378,9 +1380,6 @@ section {
 }
 
 .contact-method:hover::before {
- fix-loader-accessibility
-    opacity: 1;
-
   opacity: 1;
 }
 
@@ -1463,7 +1462,6 @@ body.dark #scrollTopBtn:hover {
   background: #fff;
   color: #000;
   border-color: #fff;
- main
 }
 
 
