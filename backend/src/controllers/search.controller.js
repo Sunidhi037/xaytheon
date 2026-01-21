@@ -2,15 +2,15 @@ const searchService = require('../services/search-engine.service');
 
 exports.smartSearch = async (req, res) => {
     try {
-        const { q, filters } = req.query;
+        const { q, filters, page } = req.query;
         if (!q) {
             return res.status(400).json({ message: "Search query is required." });
         }
 
         const decodedFilters = filters ? JSON.parse(filters) : {};
-        const results = await searchService.search(q, decodedFilters);
+        const pageNum = parseInt(page) || 1;
 
-        searchService.trackSearch(q, results.results.length);
+        const results = await searchService.search(q, decodedFilters, pageNum);
 
         res.json({
             success: true,
