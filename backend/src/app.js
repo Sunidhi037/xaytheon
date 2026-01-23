@@ -154,6 +154,8 @@ app.use("/api/risk", riskRoutes);
 app.use("/api/analyzer", analyzerRoutes);
 app.use("/api/release", releaseRoutes);
 app.use("/api/predictive", predictiveRoutes);
+app.use("/api/refactor", refactorRoutes);
+app.use("/api/diff", diffRoutes);
 
 app.use((err, req, res, next) => {
   console.error("Error:", err);
