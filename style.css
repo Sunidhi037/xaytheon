@@ -1436,6 +1436,11 @@ body.dark #scrollTopBtn:hover {
   padding: 0 0 5px 0;
 }
 
+[data-theme="dark"] .github-status {
+  color: #e5e7eb !important;
+}
+
+
 /* ===================================
    FOOTER STYLES - BLACK THEME
    =================================== */
@@ -1987,3 +1992,4 @@ body.dark #scrollTopBtn:hover {
     font-size: 12px;
   }
 }
+
