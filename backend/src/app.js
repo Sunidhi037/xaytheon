@@ -24,10 +24,7 @@ const dependencyRoutes = require("./routes/dependency.routes");
 const aiRoutes = require("./routes/ai.routes");
 const riskRoutes = require("./routes/risk.routes");
 const analyzerRoutes = require("./routes/analyzer.routes");
-const releaseRoutes = require("./routes/release.routes");
-const warRoomRoutes = require("./routes/war-room.routes");
 const securityFuzzerRoutes = require("./routes/security-fuzzer.routes");
-const codeDnaRoutes = require("./routes/code-dna.routes");
 
 const app = express();
 
@@ -154,7 +151,7 @@ app.use("/api/dependency", dependencyRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/risk", riskRoutes);
 app.use("/api/analyzer", analyzerRoutes);
-app.use("/api/code-dna", codeDNARoutes);
+app.use("/api/security", securityFuzzerRoutes);
 
 app.use((err, req, res, next) => {
   console.error("Error:", err);
