@@ -153,6 +153,9 @@ app.use("/api/dependency", dependencyRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/risk", riskRoutes);
 app.use("/api/analyzer", analyzerRoutes);
+app.use("/api/predictive", predictiveRoutes);
+app.use("/api/refactor", refactorRoutes);
+app.use("/api/diff", diffRoutes);
 app.use("/api/release", releaseRoutes);
 app.use("/api/knowledge-map", knowledgeMapRoutes);
 
