@@ -1,157 +1,161 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GitHub Dashboard — XAYTHEON</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GitHub Dashboard — XAYTHEON</title>
 
-    <!-- Supabase SDK & auth bootstrap -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.44.4/dist/umd/supabase.min.js"></script>
-    <script defer src="auth.js"></script>
-    <script>
-        const theme = localStorage.getItem("theme")
-        if (theme) {
-          document.documentElement.setAttribute("data-theme", theme)
-        }
-    </script>
-    <!--Styling -->
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="style.css" />
-    <style>
-      
- .section-title{
- font-family:VT323;
- font-size:60px;
- top:10vh;
- }
- .navbar {
-   background-color: #000;
- }
+  <!-- Supabase SDK & auth bootstrap -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.44.4/dist/umd/supabase.min.js"></script>
+  <script defer src="auth.js"></script>
+  <script>
+    const theme = localStorage.getItem("theme")
+    if (theme) {
+      document.documentElement.setAttribute("data-theme", theme)
+    }
+  </script>
+  <!--Styling -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .section-title {
+      font-family: VT323;
+      font-size: 60px;
+      top: 10vh;
+    }
 
- .navbar a,
- .navbar .theme-toggle {
-   color: #fff;
- }
- .navbar .theme-toggle svg {
-   stroke: #fff;
- }
- .navbar .logo-img {
-   filter: brightness(0) invert(1);
- }
+    .navbar {
+      background-color: #000;
+    }
 
- #gh-username::placeholder {
-   color: rgba(0, 0, 0, 0.6);
- }
+    .navbar a,
+    .navbar .theme-toggle {
+      color: #fff;
+    }
 
- #gh-username:focus {
-   border-color: rgba(0, 0, 0, 0.6);
-   box-shadow:
-     0 0 0 3px rgba(0, 0, 0, 0.1),
-     0 12px 28px rgba(0, 0, 0, 0.12);
- }
- #gh-username {
-   background: rgba(99, 102, 241, 0.12); /* accent tint */
-   backdrop-filter: blur(14px);
-   -webkit-backdrop-filter: blur(14px);
+    .navbar .theme-toggle svg {
+      stroke: #fff;
+    }
 
-   border: 1px solid rgba(99, 102, 241, 0.25);
-   border-radius: 14px;
+    .navbar .logo-img {
+      filter: brightness(0) invert(1);
+    }
 
-   color: #000;
- }
+    #gh-username::placeholder {
+      color: rgba(0, 0, 0, 0.6);
+    }
 
- /* =========================
+    #gh-username:focus {
+      border-color: rgba(0, 0, 0, 0.6);
+      box-shadow:
+        0 0 0 3px rgba(0, 0, 0, 0.1),
+        0 12px 28px rgba(0, 0, 0, 0.12);
+    }
+
+    #gh-username {
+      background: rgba(99, 102, 241, 0.12);
+      /* accent tint */
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: 14px;
+
+      color: #000;
+    }
+
+    /* =========================
     PROFILE CARD ANIMATION
     ========================= */
 
- .profile-card {
-   position: relative;
-   overflow: hidden;
- }
+    .profile-card {
+      position: relative;
+      overflow: hidden;
+    }
 
- /* --- Base layout (before hover) --- */
- .profile-row {
-   display: flex;
-   flex-direction: column;
-   align-items: center;
-   text-align: center;
-   gap: 10px;
+    /* --- Base layout (before hover) --- */
+    .profile-row {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 10px;
 
-   transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
-   will-change: transform;
- }
+      transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+      will-change: transform;
+    }
 
- /* Avatar */
- .avatar {
-   width: 96px;
-   height: 96px;
-   border-radius: 50%;
-   object-fit: cover;
+    /* Avatar */
+    .avatar {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      object-fit: cover;
 
-   transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
-   will-change: transform;
- }
+      transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+      will-change: transform;
+    }
 
- /* Hide secondary text initially */
- .profile-login,
- .profile-bio {
-   opacity: 0;
-   transform: translateY(6px);
+    /* Hide secondary text initially */
+    .profile-login,
+    .profile-bio {
+      opacity: 0;
+      transform: translateY(6px);
 
-   transition:
-     opacity 0.45s ease 0.15s,
-     transform 0.45s ease 0.15s;
+      transition:
+        opacity 0.45s ease 0.15s,
+        transform 0.45s ease 0.15s;
 
-   will-change: opacity, transform;
- }
+      will-change: opacity, transform;
+    }
 
- /* Stats hidden & removed from flow */
- .profile-stats {
-   position: absolute;
-   bottom: 20px;
-   left: 50%;
-   transform: translate(-50%, 20px);
-   opacity: 0;
+    /* Stats hidden & removed from flow */
+    .profile-stats {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translate(-50%, 20px);
+      opacity: 0;
 
-   display: flex;
-   gap: 28px;
+      display: flex;
+      gap: 28px;
 
-   transition:
-     opacity 0.6s ease 0.2s,
-     transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.2s;
+      transition:
+        opacity 0.6s ease 0.2s,
+        transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.2s;
 
-   will-change: opacity, transform;
- }
+      will-change: opacity, transform;
+    }
 
- /* =========================
+    /* =========================
     HOVER STATE
     ========================= */
 
- .profile-card:hover .profile-row {
-   flex-direction: row;
-   align-items: center;
-   text-align: left;
-   transform: translateX(-40px);
- }
+    .profile-card:hover .profile-row {
+      flex-direction: row;
+      align-items: center;
+      text-align: left;
+      transform: translateX(-40px);
+    }
 
- .profile-card:hover .avatar {
-   transform: scale(0.6);
- }
+    .profile-card:hover .avatar {
+      transform: scale(0.6);
+    }
 
- .profile-card:hover .profile-login,
- .profile-card:hover .profile-bio {
-   opacity: 1;
-   transform: translateY(0);
- }
+    .profile-card:hover .profile-login,
+    .profile-card:hover .profile-bio {
+      opacity: 1;
+      transform: translateY(0);
+    }
 
- .profile-card:hover .profile-stats {
-   opacity: 1;
-   transform: translate(-50%, 0);
- }
-
-    </style>
+    .profile-card:hover .profile-stats {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+  </style>
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -164,36 +168,21 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Press+Start+2P&display=swap"
-    rel="stylesheet"
-  />
+    rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="github.css" />
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-  />
+  <link rel="stylesheet" href="github-suggestions.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <script>
 
   </script>
-  <script
-    defer
-    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.44.4/dist/umd/supabase.min.js"
-  ></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.44.4/dist/umd/supabase.min.js"></script>
 
-  <script
-    defer
-    src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"
-  ></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 
   <!-- Three.js (Mini Viewer / 3D Stuff) -->
-  <script
-    defer
-    src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"
-  ></script>
-  <script
-    defer
-    src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"
-  ></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 
 </head>
 
@@ -221,12 +210,8 @@
                 <circle cx="11" cy="11" r="8"></circle>
                 <path d="m21 21-4.35-4.35"></path>
               </svg>
-              <input
-                type="text"
-                id="gh-username"
-                class="search-input"
-                placeholder="Enter GitHub username (e.g., octocat)"
-              />
+              <input type="text" id="gh-username" class="search-input"
+                placeholder="Enter GitHub username (e.g., octocat)" />
             </div>
 
             <div class="search-actions">
@@ -411,6 +396,8 @@
             <!-- Language Breakdown -->
             <div class="language-breakdown-card">
               <h4 class="card-title">Language Distribution</h4>
+              <p id="primary-lang-insight" class="insight-text"
+                style="color: var(--text-secondary); margin-bottom: 16px; font-size: 0.95rem;"></p>
               <div id="language-chart" class="language-chart"></div>
             </div>
 
@@ -418,6 +405,16 @@
             <div class="top-repos-card">
               <h4 class="card-title">Top Repositories</h4>
               <div id="top-repos-list" class="top-repos-list"></div>
+            </div>
+
+            <!-- Suggested Repositories (Smart Default) -->
+            <div class="suggested-repos-card" id="suggested-repos-container" style="display: none; margin-top: 24px;">
+              <h4 class="card-title">
+                <span class="highlight-text">Recommended for You</span>
+                <span class="card-subtitle-small">Based on your <span id="primary-lang-label">code</span>
+                  interests</span>
+              </h4>
+              <div id="suggested-repos-list" class="top-repos-list"></div>
             </div>
           </section>
 
@@ -535,82 +532,82 @@
             </div>
           </section>
 
-              <!-- Average Per Day -->
-              <div class="activity-stat-card">
-                <div class="activity-icon avg">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 3v18h18" />
-                    <path d="m19 9-5 5-4-4-3 3" />
-                  </svg>
-                </div>
-                <div class="activity-value" id="avg-daily">0.0</div>
-                <div class="activity-label">Avg Per Day</div>
-              </div>
+          <!-- Average Per Day -->
+          <div class="activity-stat-card">
+            <div class="activity-icon avg">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 3v18h18" />
+                <path d="m19 9-5 5-4-4-3 3" />
+              </svg>
             </div>
-            <!-- Contribution Heatmap -->
-
-            <div class="contribution-heatmap-card">
-              <div class="heatmap-header">
-                <h4 class="card-title">Contribution Activity</h4>
-                <div class="heatmap-legend">
-                  <span class="legend-label">Less</span>
-                  <div class="legend-box level-0"></div>
-                  <div class="legend-box level-1"></div>
-                  <div class="legend-box level-2"></div>
-                  <div class="legend-box level-3"></div>
-                  <div class="legend-box level-4"></div>
-                  <span class="legend-label">More</span>
-                </div>
-              </div>
-
-              <div class="heatmap-container">
-                <div class="heatmap-wrapper">
-                  <!-- Weekday Labels -->
-                  <div class="weekday-labels">
-                    <div class="weekday-label">Mon</div>
-                    <div class="weekday-label"></div>
-                    <div class="weekday-label">Wed</div>
-                    <div class="weekday-label"></div>
-                    <div class="weekday-label">Fri</div>
-                    <div class="weekday-label"></div>
-                    <div class="weekday-label"></div>
-                  </div>
-
-                  <!-- Month Labels -->
-                  <div id="month-labels" class="month-labels"></div>
-
-    <!-- Scripts -->
-    <script defer src="auth.js"></script>
-    <script defer src="i18n.js"></script>
-    <script src="theme.js"></script>
-    <script src="github.js"></script>
-    <script src="boilerplate/boilerplate-loader.js"></script>
-      </section>
-    </main>
-                  <!-- Grid Container -->
-                  <div class="grid-container">
-                    <div id="contribution-heatmap" class="contribution-grid"></div>
-                  </div>
-                </div>
-              </div>
-
-              <div id="heatmap-tooltip" class="heatmap-tooltip"></div>
-            </div>
-
-            <!-- Activity Patterns -->
-
-            <div class="activity-patterns-card">
-              <h4 class="card-title">Activity Patterns</h4>
-              <div class="chart-container">
-                <canvas id="activity-chart" class="activity-chart"></canvas>
-              </div>
-            </div>
-          </section>
+            <div class="activity-value" id="avg-daily">0.0</div>
+            <div class="activity-label">Avg Per Day</div>
+          </div>
         </div>
+        <!-- Contribution Heatmap -->
 
-      </div>
+        <div class="contribution-heatmap-card">
+          <div class="heatmap-header">
+            <h4 class="card-title">Contribution Activity</h4>
+            <div class="heatmap-legend">
+              <span class="legend-label">Less</span>
+              <div class="legend-box level-0"></div>
+              <div class="legend-box level-1"></div>
+              <div class="legend-box level-2"></div>
+              <div class="legend-box level-3"></div>
+              <div class="legend-box level-4"></div>
+              <span class="legend-label">More</span>
+            </div>
+          </div>
+
+          <div class="heatmap-container">
+            <div class="heatmap-wrapper">
+              <!-- Weekday Labels -->
+              <div class="weekday-labels">
+                <div class="weekday-label">Mon</div>
+                <div class="weekday-label"></div>
+                <div class="weekday-label">Wed</div>
+                <div class="weekday-label"></div>
+                <div class="weekday-label">Fri</div>
+                <div class="weekday-label"></div>
+                <div class="weekday-label"></div>
+              </div>
+
+              <!-- Month Labels -->
+              <div id="month-labels" class="month-labels"></div>
+
+              <!-- Scripts -->
+              <script defer src="auth.js"></script>
+              <script defer src="i18n.js"></script>
+              <script src="theme.js"></script>
+              <script src="github.js"></script>
+              <script src="boilerplate/boilerplate-loader.js"></script>
+              </section>
     </main>
+    <!-- Grid Container -->
+    <div class="grid-container">
+      <div id="contribution-heatmap" class="contribution-grid"></div>
+    </div>
+  </div>
+  </div>
+
+  <div id="heatmap-tooltip" class="heatmap-tooltip"></div>
+  </div>
+
+  <!-- Activity Patterns -->
+
+  <div class="activity-patterns-card">
+    <h4 class="card-title">Activity Patterns</h4>
+    <div class="chart-container">
+      <canvas id="activity-chart" class="activity-chart"></canvas>
+    </div>
+  </div>
+  </section>
+  </div>
+
+  </div>
+  </main>
   </div>
 
   <!-- =====================================================
@@ -630,4 +627,5 @@
   <script defer src="github.js"></script>
   <script defer src="contributions.js"></script>
 </body>
+
 </html>

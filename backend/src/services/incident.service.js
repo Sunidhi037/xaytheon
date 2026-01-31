@@ -17,7 +17,7 @@ class IncidentService {
      */
     createIncident(event, userId) {
         const incidentId = `INC-${Date.now()}-${this.incidentCounter++}`;
-        
+
         const incident = {
             id: incidentId,
             eventId: event.id,
@@ -31,7 +31,7 @@ class IncidentService {
             repository: event.repository,
             environment: event.environment || 'unknown',
             metadata: event.metadata || {},
-            
+
             // Incident tracking
             assignedTo: [],
             watchers: [userId],
@@ -41,17 +41,17 @@ class IncidentService {
                 userId,
                 details: 'Incident created'
             }],
-            
+
             // Related data
             relatedPRs: [],
             relatedDevelopers: [],
             affectedServices: [],
-            
+
             // AI analysis
             rootCause: null,
             aiHypothesis: null,
             suggestedActions: [],
-            
+
             // Metrics
             impactScore: 0,
             affectedUsers: event.metadata?.affectedUsers || 0,
@@ -95,7 +95,7 @@ class IncidentService {
         await this.enrichIncident(incident);
 
         this.pinnedIncident = incident;
-        
+
         // Add to timeline
         incident.timeline.push({
             timestamp: Date.now(),
@@ -119,8 +119,8 @@ class IncidentService {
                 details: 'Incident unpinned from War-Room'
             });
         }
-        
-        const wasPin ned = this.pinnedIncident;
+
+        const wasPinned = this.pinnedIncident;
         this.pinnedIncident = null;
         return wasPinned;
     }
@@ -140,11 +140,11 @@ class IncidentService {
             // Extract repository info
             if (incident.repository) {
                 const [owner, repo] = incident.repository.split('/');
-                
+
                 // Fetch related PRs
                 const prs = await this.fetchRelatedPRs(owner, repo, incident);
                 incident.relatedPRs = prs;
-                
+
                 // Extract developers
                 const developers = new Set();
                 prs.forEach(pr => {
@@ -185,7 +185,7 @@ class IncidentService {
             );
 
             const prs = response.data || [];
-            
+
             return prs
                 .filter(pr => pr.merged_at)
                 .map(pr => ({
@@ -243,7 +243,7 @@ class IncidentService {
         }
 
         incident.assignedTo = Array.isArray(userIds) ? userIds : [userIds];
-        
+
         incident.timeline.push({
             timestamp: Date.now(),
             action: 'assigned',
@@ -341,7 +341,7 @@ class IncidentService {
             open: recentIncidents.filter(i => i.status === 'open').length,
             inProgress: recentIncidents.filter(i => i.status === 'in_progress').length,
             resolved: recentIncidents.filter(i => i.status === 'resolved').length,
-            
+
             bySeverity: {
                 critical: recentIncidents.filter(i => i.severity === 'critical').length,
                 high: recentIncidents.filter(i => i.severity === 'high').length,
