@@ -166,7 +166,6 @@ async function ghJson(url, headers = {}) {
       "User-Agent": "XAYTHEON",
       ...headers,
     },
-<<<<<<< HEAD
   });
 
   // Extract Rate Limit Headers
@@ -261,10 +260,10 @@ function renderRepos(repos) {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        
+
         const repoId = btn.getAttribute('data-repo-id');
         const repo = repos.find(r => r.id == repoId);
-        
+
         if (!repo) return;
 
         if (window.favoritesManager.isFavorited(repo.id)) {
@@ -877,46 +876,67 @@ async function initRecommendations() {
 function renderRecommendationCards(repos) {
   const list = document.getElementById("rec-list");
   if (!list) return;
-  list.innerHTML = repos.map(r => {
-    const safeRepo = JSON.stringify({
-      full_name: r.full_name,
-      language: r.language,
-      html_url: r.html_url
-    }).replace(/"/g, "&quot;");
 
-    return `
-    <div class="card repo-card">
-       <div class="repo-header">
-         <div class="repo-name">
-           <a href="${r.html_url}" target="_blank" onclick='trackRepoView(${safeRepo})'>${escapeHtml(r.name)}</a>
-         </div>
-         <span class="repo-lang">${r.language || ''}</span>
-       </div>
-       <div class="repo-desc">${escapeHtml(r.description || 'No description')}</div>
-       <div class="repo-meta">
-         <span>★ ${r.stargazers_count}</span>
-         <span class="repo-owner">by ${escapeHtml(r.owner.login)}</span>
-       </div>
-    </div>
-    `;
-  }).join("");
-=======
-  })
-    .then((res) => {
-      if (!res.ok) throw new Error(`GitHub API ${res.status}`);
-      return res.json();
-    })
-    .finally(() => IN_FLIGHT_REQUESTS.delete(key));
+  list.innerHTML = ""; // clear existing cards
 
-  IN_FLIGHT_REQUESTS.set(key, promise);
-  return promise;
->>>>>>> origin/main
+  repos.forEach(r => {
+    const card = document.createElement("div");
+    card.className = "card repo-card";
+
+    const repoName = document.createElement("a");
+    repoName.href = r.html_url;
+    repoName.target = "_blank";
+    repoName.textContent = r.name;
+    repoName.addEventListener("click", () => trackRepoView(r));
+
+    const header = document.createElement("div");
+    header.className = "repo-header";
+    header.innerHTML = `<span class="repo-lang">${r.language || ''}</span>`;
+    header.prepend(repoName);
+
+    const desc = document.createElement("div");
+    desc.className = "repo-desc";
+    desc.textContent = r.description || 'No description';
+
+    const meta = document.createElement("div");
+    meta.className = "repo-meta";
+    meta.innerHTML = `<span>★ ${r.stargazers_count}</span> <span class="repo-owner">by ${r.owner.login}</span>`;
+
+    card.append(header, desc, meta);
+    list.appendChild(card);
+  });
 }
 
-// ===================== DOM READY =====================
-document.addEventListener("DOMContentLoaded", () => {
-  if (document.getElementById("three-canvas")) {
-    init();
+// Example usage with fetch
+function fetchRepos(key) {
+  const promise = fetch(url, {
+  headers: {
+    Accept: "application/vnd.github+json",
+    "User-Agent": "XAYTHEON",
+    ...headers,
+  },
+}).then(async (res) => {
+  const limit = res.headers.get("X-RateLimit-Limit");
+  const remaining = res.headers.get("X-RateLimit-Remaining");
+
+  if (limit && remaining) {
+    updateRateLimitUI(remaining, limit);
   }
+
+  if (res.status === 403 || res.status === 429) {
+    const resetTime = res.headers.get("X-RateLimit-Reset");
+    const waitTime = resetTime
+      ? Math.ceil((resetTime * 1000 - Date.now()) / 60000)
+      : "some time";
+    throw new Error(`GitHub rate limit exceeded. Try again in ${waitTime} min`);
+  }
+
+  if (!res.ok) {
+    throw new Error(`GitHub API ${res.status}`);
+  }
+
+  return res.json();
 });
 
+IN_FLIGHT_REQUESTS.set(key, promise);
+return promise;

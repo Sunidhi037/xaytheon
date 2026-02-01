@@ -17,7 +17,7 @@ function initializeSocket(server) {
     });
 
     // Initialize War-Room socket handler
-    warRoomSocketHandler = new WarRoomSocket(io);
+   // warRoomSocketHandler = new WarRoomSocket(io);
 
     // Authentication middleware for main namespace
     io.use((socket, next) => {
@@ -131,7 +131,7 @@ function initializeSocket(server) {
     console.log("🔌 WebSocket server initialized");
 
     // Initialize globe services with Socket.IO
-    globeController.initializeServices(io);
+    //globeController.initializeServices(io);
 
     // Start analytics simulation
     startRealTimeSimulation(io);
