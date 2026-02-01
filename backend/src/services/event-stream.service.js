@@ -3,14 +3,16 @@
  * Collects and streams real-time repository events
  */
 
+const EventEmitter = require('events');
 const axios = require('axios');
 
-class EventStreamService {
+class EventStreamService extends EventEmitter {
     constructor() {
+        super();
         this.eventBuffer = [];
         this.maxBufferSize = 1000;
         this.listeners = new Set();
-        
+
         // Event type priorities
         this.priorities = {
             'deployment_failure': 10,
@@ -23,7 +25,7 @@ class EventStreamService {
             'pr_opened': 2,
             'comment': 1
         };
-        
+
         // Event type colors
         this.eventColors = {
             'deployment_failure': '#dc3545',
@@ -52,7 +54,7 @@ class EventStreamService {
         };
 
         this.eventBuffer.unshift(enrichedEvent);
-        
+
         // Trim buffer
         if (this.eventBuffer.length > this.maxBufferSize) {
             this.eventBuffer = this.eventBuffer.slice(0, this.maxBufferSize);
@@ -60,6 +62,7 @@ class EventStreamService {
 
         // Notify all listeners
         this.notifyListeners(enrichedEvent);
+        this.emit('event', enrichedEvent);
 
         return enrichedEvent;
     }
@@ -111,7 +114,7 @@ class EventStreamService {
      */
     getStatistics(timeWindow = 3600000) { // Default 1 hour
         const now = Date.now();
-        const recentEvents = this.eventBuffer.filter(e => 
+        const recentEvents = this.eventBuffer.filter(e =>
             now - e.timestamp < timeWindow
         );
 
@@ -121,11 +124,11 @@ class EventStreamService {
 
         recentEvents.forEach(event => {
             typeCount[event.type] = (typeCount[event.type] || 0) + 1;
-            
+
             if (event.priority >= 8) severityCount.critical++;
             else if (event.priority >= 5) severityCount.warning++;
             else severityCount.info++;
-            
+
             if (event.repository) repositories.add(event.repository);
         });
 
@@ -145,21 +148,21 @@ class EventStreamService {
     async fetchGitHubActions(owner, repo, token) {
         try {
             const headers = token ? { Authorization: `Bearer ${token}` } : {};
-            
+
             const response = await axios.get(
                 `https://api.github.com/repos/${owner}/${repo}/actions/runs`,
-                { 
+                {
                     headers,
                     params: { per_page: 20 }
                 }
             );
 
             const runs = response.data.workflow_runs || [];
-            
+
             runs.forEach(run => {
                 const eventType = run.conclusion === 'failure' ? 'build_failure' :
-                                 run.conclusion === 'success' ? 'deployment_success' :
-                                 'build_in_progress';
+                    run.conclusion === 'success' ? 'deployment_success' :
+                        'build_in_progress';
 
                 if (run.conclusion) {
                     this.addEvent({
@@ -193,17 +196,17 @@ class EventStreamService {
     async fetchCommits(owner, repo, token) {
         try {
             const headers = token ? { Authorization: `Bearer ${token}` } : {};
-            
+
             const response = await axios.get(
                 `https://api.github.com/repos/${owner}/${repo}/commits`,
-                { 
+                {
                     headers,
                     params: { per_page: 10 }
                 }
             );
 
             const commits = response.data || [];
-            
+
             commits.forEach(commit => {
                 this.addEvent({
                     type: 'commit',
@@ -234,20 +237,20 @@ class EventStreamService {
     async fetchPullRequests(owner, repo, token) {
         try {
             const headers = token ? { Authorization: `Bearer ${token}` } : {};
-            
+
             const response = await axios.get(
                 `https://api.github.com/repos/${owner}/${repo}/pulls`,
-                { 
+                {
                     headers,
                     params: { state: 'all', per_page: 10 }
                 }
             );
 
             const prs = response.data || [];
-            
+
             prs.forEach(pr => {
                 const eventType = pr.merged_at ? 'pr_merged' : 'pr_opened';
-                
+
                 this.addEvent({
                     type: eventType,
                     title: pr.title,

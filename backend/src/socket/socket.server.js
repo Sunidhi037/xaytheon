@@ -2,6 +2,7 @@ const { Server } = require("socket.io");
 const jwt = require("jsonwebtoken");
 const { startRealTimeSimulation } = require("../services/analytics.socket.service");
 const WarRoomSocket = require("./war-room.socket");
+const globeController = require("../controllers/globe.controller");
 
 let io;
 let warRoomSocketHandler;
